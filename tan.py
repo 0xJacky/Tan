@@ -7,7 +7,7 @@ from db import Database
 db = Database()
 VERSION = '0.0.1'
 # 登陆
-itchat.auto_login(True, enableCmdQR=True)
+itchat.auto_login(True, enableCmdQR=2)
 # 处理群聊消息
 @itchat.msg_register(itchat.content.TEXT, isGroupChat = True)
 def text_reply(msg):
