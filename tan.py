@@ -4,20 +4,26 @@
 import itchat
 import time
 from db import Database
+
 db = Database()
 VERSION = '0.1'
 # 登陆
 itchat.auto_login(True)
-#获取学生名单
+
+
+# 获取学生名单
 def get_students_list():
     sql = "SELECT * FROM `%s_students`" % db.sql_prefix
     print(sql)
     return db.fetchall(sql)
-#获取打卡列表
+
+
+# 获取打卡列表
 def query_clockin_list():
     date = time.strftime("%Y-%m-%d", time.localtime())
     sql = "SELECT s.`id`, t.`id`, s.`name`, t.`date` FROM (%s_task as t INNER JOIN %s_log as l ON t.`ID` = l.`task_id`) \
-        INNER JOIN %s_students as s ON s.`ID` = l.`student_id` WHERE t.`date`='%s'" % (db.sql_prefix, db.sql_prefix, db.sql_prefix, date)
+        INNER JOIN %s_students as s ON s.`ID` = l.`student_id` WHERE t.`date`='%s'" % (
+    db.sql_prefix, db.sql_prefix, db.sql_prefix, date)
     print(sql)
     res = db.fetchall(sql)
     message = '%s 打卡记录\n' % date
@@ -26,7 +32,9 @@ def query_clockin_list():
         t += 1
         message += 'No.%s %s\n' % (t, i['name'])
     return message[:-1]
-#打卡
+
+
+# 打卡
 def handle_clockin(msg):
     message = ''
     sql = "SELECT * FROM `%s_students` WHERE `name`='%s'" % (db.sql_prefix, msg['ActualNickName'])
@@ -56,25 +64,26 @@ def handle_clockin(msg):
                 message += '你已经打过卡了'
         else:
             print('已匹配 ID:%s, 今天没有打卡任务噢') % stu_id
-            message += '今天没有打卡任务噢' % stu_id
+            message += '今天没有打卡任务噢'
 
     else:
         message += '未匹配，请修改群名片'
     return message
 
+
 # 处理群聊消息
-@itchat.msg_register(itchat.content.TEXT, isGroupChat = True)
+@itchat.msg_register(itchat.content.TEXT, isGroupChat=True)
 def text_reply(msg):
-    print('当前消息:'+msg['Content'])
+    print('当前消息: ' + msg['ActualNickName'] + ': ' + msg['Content'])
     if u'打卡' in msg['Content'] and 'Tan' not in msg['Content']:
-        print('已匹配到关键词'+'打卡')
+        print('已匹配到关键词' + '打卡')
         message = 'Project Tan v%s\n' % VERSION
         if (u'获取学生名单' in msg['Content']):
             message += str(get_students_list())
-        elif(u'查询打卡' in msg['Content']):
+        elif (u'查询打卡' in msg['Content']):
             print('已匹配到关键词' + '查询')
-            message +=str(query_clockin_list())
-        elif(u'我' in msg['Content']):
+            message += str(query_clockin_list())
+        elif (u'我' in msg['Content']):
             print('已匹配到关键词' + '我')
             message += handle_clockin(msg)
             print(message)
@@ -82,5 +91,6 @@ def text_reply(msg):
             message += '无法理解'
         print(message)
         itchat.send(u'@%s\u2005%s' % (msg['ActualNickName'], message), msg['FromUserName'])
+
 
 itchat.run()
