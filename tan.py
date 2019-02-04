@@ -44,8 +44,8 @@ def handle_clockin(msg):
     sql = "SELECT * FROM `%s_task` WHERE `date`='%s'" % (db.sql_prefix, time.strftime("%Y-%m-%d", time.localtime()))
     print(sql)
     task_res = db.fetchone(sql)
+    stu_id = stu_res['ID']
     if (stu_res):
-        stu_id = stu_res['ID']
         if (task_res):
             task_id = task_res['ID']
             print('已匹配 student_id:%s task_id:%s' % (stu_id, task_id))
