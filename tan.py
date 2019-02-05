@@ -6,7 +6,7 @@ import time
 from db import Database
 
 db = Database()
-VERSION = '0.1'
+VERSION = '0.9'
 # 登陆
 itchat.auto_login(True)
 
@@ -44,8 +44,8 @@ def handle_clockin(msg):
     sql = "SELECT * FROM `%s_task` WHERE `date`='%s'" % (db.sql_prefix, time.strftime("%Y-%m-%d", time.localtime()))
     print(sql)
     task_res = db.fetchone(sql)
-    stu_id = stu_res['ID']
     if (stu_res):
+        stu_id = stu_res['ID']
         if (task_res):
             task_id = task_res['ID']
             print('已匹配 student_id:%s task_id:%s' % (stu_id, task_id))
@@ -63,7 +63,7 @@ def handle_clockin(msg):
             else:
                 message += '你已经打过卡了'
         else:
-            print('已匹配 ID:%s, 今天没有打卡任务噢') % stu_id
+            print('已匹配 Student ID:%s, 今天没有打卡任务噢' % stu_id)
             message += '今天没有打卡任务噢'
 
     else:
@@ -75,22 +75,22 @@ def handle_clockin(msg):
 @itchat.msg_register(itchat.content.TEXT, isGroupChat=True)
 def text_reply(msg):
     print('当前消息: ' + msg['ActualNickName'] + ': ' + msg['Content'])
-    if u'打卡' in msg['Content'] and 'Tan' not in msg['Content']:
-        print('已匹配到关键词' + '打卡')
-        message = 'Project Tan v%s\n' % VERSION
+    if u'不' not in msg['Content'] and 'Tan' not in msg['Content']:
+        Tan = 'Project Tan v%s\n' % VERSION
+        message = Tan
         if (u'获取学生名单' in msg['Content']):
             message += str(get_students_list())
         elif (u'查询打卡' in msg['Content']):
             print('已匹配到关键词' + '查询')
             message += str(query_clockin_list())
-        elif (u'我' in msg['Content']):
-            print('已匹配到关键词' + '我')
+        elif (u'我' in msg['Content'] and u'打卡' in msg['Content']):
+            print('已匹配到关键词' + '我/打卡')
             message += handle_clockin(msg)
-            print(message)
         else:
-            message += '无法理解'
-        print(message)
-        itchat.send(u'@%s\u2005%s' % (msg['ActualNickName'], message), msg['FromUserName'])
+            pass
+        if message != Tan:
+            print(message)
+            itchat.send(u'@%s\u2005%s' % (msg['ActualNickName'], message), msg['FromUserName'])
 
 
 itchat.run()
