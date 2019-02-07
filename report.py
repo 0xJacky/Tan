@@ -50,7 +50,6 @@ print(context)
 
 for d in dates:
     list = query_clock_in_list(d)
-    print(list)
     for i in students:
         if i in list:
             context[i][d] = '√'
