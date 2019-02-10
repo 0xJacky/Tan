@@ -57,4 +57,4 @@ MIT
 [image-1]:	https://github.com/0xJacky/Tan/raw/master/screenshots/1.jpg
 [image-2]:	https://github.com/0xJacky/Tan/raw/master/screenshots/2.png
 [image-3]:	https://github.com/0xJacky/Tan/raw/master/screenshots/3.jpg
-[image-4]:	https://github.com/0xJacky/Tan/raw/master/screenshots/4.jpg
+[image-4]:	https://github.com/0xJacky/Tan/raw/master/screenshots/4.png
