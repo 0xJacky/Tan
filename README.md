@@ -5,7 +5,7 @@
 
 ## 使用方法 Usage
 1. 将 tan.sql 导入 MySQL
-2. 在 tan.task 中添加任务 (id,date), 在 tan.student 中导入学生名单
+2. 在 tan.task 中添加任务 (id,date), 在 tan.students 中导入学生名单
 3. 拷贝 config-default.ini 为 config.ini 并完成配置
 4. 安装依赖 `pip3 install -r requirements.txt`
 5. 运行（需要扫描二维码登录微信，itchat 在项目的根目录生成 QR.png）
