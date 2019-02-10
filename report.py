@@ -4,13 +4,12 @@
 import os
 import time
 import collections
-from xlwt import Workbook
+import xlsxwriter
 from db import Database
 db = Database()
 
 ABS_PATH = os.path.split(os.path.realpath(__file__))[0]
-REPORT_PATH = os.path.join(ABS_PATH, 'report-%s.xls' % time.strftime("%Y-%m-%d", time.localtime()))
-
+REPORT_PATH = os.path.join(ABS_PATH, 'report-%s.xlsx' % time.strftime("%Y-%m-%d", time.localtime()))
 
 def get_tasks():
     sql = 'SELECT * FROM %s_task' % db.sql_prefix
@@ -64,14 +63,19 @@ print(context)
 
 
 # 定义excel操作句柄
-o = Workbook()
-e = o.add_sheet(u'打卡统计')
+o = xlsxwriter.Workbook(REPORT_PATH)
+e = o.add_worksheet(u'打卡统计')
+workfomat = o.add_format({
+    'align' : 'center',
+    'valign' : 'vcenter'
+})
 index = 0
 
 
 # 标题
 for data in head:
-    e.write(0, index, data)
+    e.write(0, index, data, workfomat)
+    e.set_column(0, index, 10)
     index += 1
 
 index = 1
@@ -81,9 +85,8 @@ index = 1
 for k,v in context.items():
     col_index = 0
     for i in head:
-        e.write(index, col_index, v[i])
+        e.write(index, col_index, v[i], workfomat)
         col_index += 1
     index += 1
-
-# 保存
-o.save(REPORT_PATH)
+# 关闭
+o.close()
