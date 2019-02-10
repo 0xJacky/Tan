@@ -3,7 +3,6 @@
 # 加载包
 import os
 import time
-import collections
 import xlsxwriter
 from db import Database
 db = Database()
