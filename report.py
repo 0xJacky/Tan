@@ -3,6 +3,7 @@
 # 加载包
 import os
 import time
+import collections
 from xlwt import Workbook
 from db import Database
 db = Database()
@@ -46,6 +47,7 @@ print(head)
 
 # 内容
 context = {}
+context = collections.OrderedDict(sorted(context.items(), key=lambda t: t[0]))
 students = get_students_list()
 for n in students:
     context[n] = {u'姓名':n}
