@@ -9,7 +9,7 @@ from db import Database
 db = Database()
 
 ABS_PATH = os.path.split(os.path.realpath(__file__))[0]
-REPORT_PATH = os.path.join(ABS_PATH, 'report-%s.xlsx' % time.strftime("%Y-%m-%d", time.localtime()))
+REPORT_PATH = os.path.join(ABS_PATH, 'report-%s.xlsx' % time.strftime("%Y-%m-%d"))
 
 def get_tasks():
     sql = 'SELECT * FROM %s_task' % db.sql_prefix
@@ -36,57 +36,37 @@ def query_clock_in_list(date):
     return list
 
 
-# 标题
-head = [u'姓名']
-dates = []
-for t in get_tasks():
-    dates = dates + [str(t['date'])]
-head = head + dates
-print(head)
-
-# 内容
-context = {}
-context = collections.OrderedDict(sorted(context.items(), key=lambda t: t[0]))
-students = get_students_list()
-for n in students:
-    context[n] = {u'姓名':n}
-print(context)
-
-for d in dates:
-    list = query_clock_in_list(d)
-    for i in students:
-        if i in list:
-            context[i][d] = '√'
-        else:
-            context[i][d] = '×'
-print(context)
-
-
-# 定义excel操作句柄
+# 定义 excel 操作句柄
 o = xlsxwriter.Workbook(REPORT_PATH)
 e = o.add_worksheet(u'打卡统计')
 workfomat = o.add_format({
     'align' : 'center',
     'valign' : 'vcenter'
 })
-index = 0
 
-
-# 标题
-for data in head:
-    e.write(0, index, data, workfomat)
-    e.set_column(0, index, 10)
-    index += 1
-
+# (0,0)
+e.write(0, 0, u'姓名', workfomat)
+# (x,0)
 index = 1
-
-
-# 内容
-for k,v in context.items():
-    col_index = 0
-    for i in head:
-        e.write(index, col_index, v[i], workfomat)
-        col_index += 1
+students = get_students_list()
+for s in students:
+    e.write(index, 0, s, workfomat)
     index += 1
-# 关闭
+
+
+# (x,y)(x=>1,y=>0)
+col_index = 1
+for t in get_tasks():
+    e.write(0, col_index, str(t['date']), workfomat)
+    e.set_column(0, index, 10)
+    list = query_clock_in_list(t['date'])
+    index = 1
+    for i in students:
+        status = '√' if i in list else 'x'
+        e.write(index, col_index, status, workfomat)
+        index += 1
+    col_index += 1
+
+
+# 关闭 & 保存
 o.close()
